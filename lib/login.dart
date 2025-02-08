@@ -11,8 +11,7 @@ class LoginPageWidget extends StatefulWidget {
 }
 
 class _LoginPageWidgetState extends State<LoginPageWidget> {
-  late LoginPageModel _model;
-
+  late _LoginPageModel _model;
   final scaffoldKey = GlobalKey<ScaffoldState>();
   
   get authManager => null;
@@ -38,6 +37,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
 
   @override
   Widget build(BuildContext context) {
+    var onPressed;
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -335,7 +335,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                   Padding(
                     padding: EdgeInsetsDirectional.fromSTEB(0, 16, 0, 0),
                     child:
-                      onPressed: () async {
+                  onPressed: () async {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -377,6 +377,8 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
   }
   
   void LoginPageModel() {}
+  
+
 }
 
 createModel(BuildContext context, void Function() param1) {
