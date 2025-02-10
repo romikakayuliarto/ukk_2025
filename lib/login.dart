@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'dart:ui';
-import 'package:flutter/material.dart';
+import 'home.dart'; // Import HomePage
 
 class LoginPageWidget extends StatefulWidget {
   const LoginPageWidget({super.key});
@@ -11,385 +10,167 @@ class LoginPageWidget extends StatefulWidget {
 }
 
 class _LoginPageWidgetState extends State<LoginPageWidget> {
-  late _LoginPageModel _model;
-  final scaffoldKey = GlobalKey<ScaffoldState>();
-  
-  get authManager => null;
-
-  @override
-  void initState() {
-    super.initState();
-    _model = createModel(context, () => LoginPageModel());
-
-    _model.emailAddressTextController ??= TextEditingController();
-    _model.emailAddressFocusNode ??= FocusNode();
-
-    _model.passwordLoginTextController ??= TextEditingController();
-    _model.passwordLoginFocusNode ??= FocusNode();
-  }
-
-  @override
-  void dispose() {
-    _model.dispose();
-
-    super.dispose();
-  }
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _isPasswordVisible = false;
+  bool _isLoading = false;
+  final supabase = Supabase.instance.client;
 
   @override
   Widget build(BuildContext context) {
-    var onPressed;
-    return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
-        FocusManager.instance.primaryFocus?.unfocus();
-      },
-      child: Scaffold(
-        key: scaffoldKey,
-        backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
-        body: SafeArea(
-          top: true,
-          child: Padding(
-            padding: EdgeInsetsDirectional.fromSTEB(24, 0, 24, 0),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: EdgeInsetsDirectional.fromSTEB(0, 30, 0, 8),
-                    child: Text(
-                      'Login',
-                      style: FlutterFlowTheme.of(context).displaySmall.override(
-                            fontFamily: 'Outfit',
-                            color: Color(0xFF0F1113),
-                            fontSize: 32,
-                            letterSpacing: 0.0,
-                            fontWeight: FontWeight.w500,
-                          ),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: 60),
+                const Text(
+                  'Login BrantasMart',
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Access your account by logging in below.',
+                  style: TextStyle(fontSize: 16),
+                ),
+                const SizedBox(height: 24),
+                TextFormField(
+                  controller: _usernameController,
+                  decoration: InputDecoration(
+                    labelText: 'Username',
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  Row(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Expanded(
-                        child: Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(0, 8, 0, 24),
-                          child: Text(
-                            'Access your account by logging in below.',
-                            style: FlutterFlowTheme.of(context)
-                                .titleSmall
-                                .override(
-                                  fontFamily: 'Outfit',
-                                  color: Color(0xFF797979),
-                                  fontSize: 16,
-                                  letterSpacing: 0.0,
-                                  fontWeight: FontWeight.normal,
-                                ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Padding(
-                    padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 24),
-                    child: TextFormField(
-                      controller: _model.emailAddressTextController,
-                      focusNode: _model.emailAddressFocusNode,
-                      obscureText: false,
-                      decoration: InputDecoration(
-                        labelText: 'Email address',
-                        labelStyle:
-                            FlutterFlowTheme.of(context).bodySmall.override(
-                                  fontFamily: 'Outfit',
-                                  color: Color(0xFF57636C),
-                                  fontSize: 14,
-                                  letterSpacing: 0.0,
-                                  fontWeight: FontWeight.normal,
-                                ),
-                        hintText: 'Enter your email...',
-                        hintStyle:
-                            FlutterFlowTheme.of(context).bodyMedium.override(
-                                  fontFamily: 'Lexend Deca',
-                                  color: Color(0xFF57636C),
-                                  fontSize: 14,
-                                  letterSpacing: 0.0,
-                                  fontWeight: FontWeight.normal,
-                                ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: FlutterFlowTheme.of(context).secondary,
-                            width: 2,
-                          ),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color(0x00000000),
-                            width: 2,
-                          ),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        errorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color(0x00000000),
-                            width: 2,
-                          ),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        focusedErrorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color(0x00000000),
-                            width: 2,
-                          ),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        filled: true,
-                        fillColor: Colors.white,
-                        contentPadding:
-                            EdgeInsetsDirectional.fromSTEB(24, 24, 20, 24),
-                      ),
-                      style: FlutterFlowTheme.of(context).bodyMedium.override(
-                            fontFamily: 'Outfit',
-                            color: Color(0xFF0F1113),
-                            fontSize: 14,
-                            letterSpacing: 0.0,
-                            fontWeight: FontWeight.normal,
-                          ),
-                      keyboardType: TextInputType.emailAddress,
-                      validator: _model.emailAddressTextControllerValidator
-                          .asValidator(context),
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _passwordController,
+                  obscureText: !_isPasswordVisible,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                  ),
-                  TextFormField(
-                    controller: _model.passwordLoginTextController,
-                    focusNode: _model.passwordLoginFocusNode,
-                    obscureText: !_model.passwordLoginVisibility,
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      labelStyle:
-                          FlutterFlowTheme.of(context).bodySmall.override(
-                                fontFamily: 'Outfit',
-                                color: Color(0xFF57636C),
-                                fontSize: 14,
-                                letterSpacing: 0.0,
-                                fontWeight: FontWeight.normal,
-                              ),
-                      hintText: 'Enter your password...',
-                      hintStyle:
-                          FlutterFlowTheme.of(context).bodyMedium.override(
-                                fontFamily: 'Lexend Deca',
-                                color: Color(0xFF57636C),
-                                fontSize: 14,
-                                letterSpacing: 0.0,
-                                fontWeight: FontWeight.normal,
-                              ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: FlutterFlowTheme.of(context).secondary,
-                          width: 2,
-                        ),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Color(0x00000000),
-                          width: 2,
-                        ),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Color(0x00000000),
-                          width: 2,
-                        ),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Color(0x00000000),
-                          width: 2,
-                        ),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      filled: true,
-                      fillColor: Colors.white,
-                      contentPadding:
-                          EdgeInsetsDirectional.fromSTEB(24, 24, 20, 24),
-                      suffixIcon: InkWell(
-                        onTap: () => (
-                          () => _model.passwordLoginVisibility =
-                              !_model.passwordLoginVisibility,
-                        ),
-                        focusNode: FocusNode(skipTraversal: true),
-                        child: Icon(
-                          _model.passwordLoginVisibility
-                              ? Icons.visibility_outlined
-                              : Icons.visibility_off_outlined,
-                          color: Color(0xFF57636C),
-                          size: 22,
-                        ),
-                      ),
-                    ),
-                    style: FlutterFlowTheme.of(context).bodyMedium.override(
-                          fontFamily: 'Outfit',
-                          color: Color(0xFF0F1113),
-                          fontSize: 14,
-                          letterSpacing: 0.0,
-                          fontWeight: FontWeight.normal,
-                        ),
-                    validator: _model.passwordLoginTextControllerValidator
-                        .asValidator(context),
-                  ),
-                  Padding(
-                    padding: EdgeInsetsDirectional.fromSTEB(0, 24, 0, 0),
-                    child:
-                      onPressed: () async {
-                        final user = await authManager.signInWithEmail(
-                          context,
-                          _model.emailAddressTextController.text,
-                          _model.passwordLoginTextController.text,
-                        );
-                        if (user == null) {
-                          return;
-                        }
-
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => MenuPageWidget(),
-                          ),
-                          (r) => false,
-                        );
-                      },
-                      text: 'Login',
-                      options:(
-                        width: double.infinity,
-                        height: 50,
-                        padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 0),
-                        iconPadding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 0),
-                        color: FlutterFlowTheme.of(context).secondary,
-                        textStyle: FlutterFlowTheme.of(context)
-                            .titleSmall
-                            .override(
-                              fontFamily: 'Outfit',
-                              color: FlutterFlowTheme.of(context).primaryText,
-                              fontSize: 20,
-                              letterSpacing: 0.0,
-                              fontWeight: FontWeight.normal,
-                            ),
-                        elevation: 3,
-                        borderSide: BorderSide(
-                          color: Colors.transparent,
-                          width: 1,
-                        ),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                  
-                  ),
-                  Padding(
-                    padding: EdgeInsetsDirectional.fromSTEB(0, 16, 0, 0),
-                    child: 
-                      onPressed: () async {
-                        final user =
-                            await authManager.signInAnonymously(context);
-                        if (user == null) {
-                          return;
-                        }
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => MenuPageWidget(),
-                          ),
-                          (r) => false,
-                        );
-                      },
-                      text: 'Anonymous Login',
+                    suffixIcon: IconButton(
                       icon: Icon(
-                        Icons.person_sharp,
-                        color: Color(0xFF0E9134),
-                        size: 15,
+                        _isPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                        color: Colors.grey,
                       ),
-                      options: (
-                        width: double.infinity,
-                        height: 50,
-                        padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 0),
-                        iconPadding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 0),
-                        color: Color(0x00F1F4F8),
-                        textStyle:
-                            FlutterFlowTheme.of(context).titleSmall.override(
-                                  fontFamily: 'Outfit',
-                                  color: Color(0xFF0E9134),
-                                  fontSize: 16,
-                                  letterSpacing: 0.0,
-                                  fontWeight: FontWeight.normal,
-                                ),
-                        elevation: 0,
-                        borderSide: BorderSide(
-                          color: FlutterFlowTheme.of(context).secondary,
-                          width: 2,
-                        ),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    
-                  ),
-                  Padding(
-                    padding: EdgeInsetsDirectional.fromSTEB(0, 16, 0, 0),
-                    child:
-                  onPressed: () async {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CreateAccountPageWidget(),
-                          ),
-                        );
+                      onPressed: () {
+                        setState(() {
+                          _isPasswordVisible = !_isPasswordVisible;
+                        });
                       },
-                      text: 'Create account',
-                      options: (
-                        width: double.infinity,
-                        height: 50,
-                        padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 0),
-                        iconPadding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 0),
-                        color: Color(0x00F1F4F8),
-                        textStyle:
-                            FlutterFlowTheme.of(context).titleSmall.override(
-                                  fontFamily: 'Outfit',
-                                  color: Color(0xFF57636C),
-                                  fontSize: 16,
-                                  letterSpacing: 0.0,
-                                  fontWeight: FontWeight.normal,
-                                ),
-                        elevation: 0,
-                        borderSide: BorderSide(
-                          color: Colors.transparent,
-                          width: 1,
-                        ),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    
+                    ),
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 24),
+                _isLoading
+                    ? const CircularProgressIndicator()
+                    : ElevatedButton(
+                        onPressed: _login,
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: const Size(double.infinity, 50),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Text('Login'),
+                      ),
+              ],
             ),
           ),
         ),
       ),
     );
   }
-  
-  void LoginPageModel() {}
-  
 
-}
+  Future<void> _login() async {
+    final username = _usernameController.text.trim();
+    final password = _passwordController.text.trim();
 
-createModel(BuildContext context, void Function() param1) {
-}
+    // Pengecekan kolom kosong
+    if (username.isEmpty && password.isEmpty) {
+      _showNotification(
+        'Kolom username dan password harus diisi!',
+        Colors.red,
+      );
+      return;
+    } else if (username.isEmpty) {
+      _showNotification('Kolom username harus diisi!', Colors.red);
+      return;
+    } else if (password.isEmpty) {
+      _showNotification('Kolom password harus diisi!', Colors.red);
+      return;
+    }
 
-class MenuPageWidget {
-}
+    setState(() {
+      _isLoading = true;
+    });
 
-class CreateAccountPageWidget {
-}
+    try {
+      // Mengecek apakah username ada di database
+      final usernameCheck = await supabase
+          .from('user')
+          .select('username')
+          .eq('username', username)
+          .maybeSingle();
 
-class FlutterFlowTheme {
-  static of(BuildContext context) {}
+      if (usernameCheck == null) {
+        _showNotification('Username salah atau tidak terdaftar!', Colors.red);
+      } else {
+        // Mengecek apakah password cocok dengan username
+        final response = await supabase
+            .from('user')
+            .select()
+            .eq('username', username)
+            .eq('password', password)
+            .maybeSingle();
+
+        if (response != null) {
+          _showNotification('Login berhasil! Selamat datang!', Colors.green);
+          // Navigasi ke HomePage setelah login berhasil
+          Future.delayed(const Duration(seconds: 1), () {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const HomePage()),
+              (route) => false,
+            );
+          });
+        } else {
+          _showNotification('Password salah!', Colors.red);
+        }
+      }
+    } catch (e) {
+      _showNotification('Terjadi kesalahan: $e', Colors.red);
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _showNotification(String message, Color color) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: color,
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
 }
