@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'home.dart'; // Import HomePage
-
+import 'home.dart'; 
 class LoginPageWidget extends StatefulWidget {
   const LoginPageWidget({super.key});
 
@@ -29,7 +28,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
               children: [
                 const SizedBox(height: 60),
                 const Text(
-                  'Login BrantasMart',
+                  'BrantasMart',
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.w500,
@@ -37,7 +36,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  'Access your account by logging in below.',
+                  'Silahkan Login Di Bawah Ini',
                   style: TextStyle(fontSize: 16),
                 ),
                 const SizedBox(height: 24),
@@ -123,7 +122,6 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
     });
 
     try {
-      // Mengecek apakah username ada di database
       final usernameCheck = await supabase
           .from('user')
           .select('username')
@@ -133,7 +131,6 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
       if (usernameCheck == null) {
         _showNotification('Username salah atau tidak terdaftar!', Colors.red);
       } else {
-        // Mengecek apakah password cocok dengan username
         final response = await supabase
             .from('user')
             .select()
@@ -142,8 +139,7 @@ class _LoginPageWidgetState extends State<LoginPageWidget> {
             .maybeSingle();
 
         if (response != null) {
-          _showNotification('Login berhasil! Selamat datang!', Colors.green);
-          // Navigasi ke HomePage setelah login berhasil
+          _showNotification('Login berhasil! Selamat datang di kasir kami...!', Colors.green);
           Future.delayed(const Duration(seconds: 1), () {
             Navigator.pushAndRemoveUntil(
               context,
